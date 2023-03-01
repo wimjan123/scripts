@@ -1,28 +1,28 @@
-import json
+import ndjson
 import csv
-import sys
+import argparse
 import os
 
-# Get the input filename from the command-line arguments
-input_filename = sys.argv[1]
+parser = argparse.ArgumentParser(description='Convert NDJSON to CSV')
+parser.add_argument('--input', help='path to input NDJSON file')
+args = parser.parse_args()
 
-# Define the output filename by replacing the extension with .csv
-output_filename = os.path.splitext(input_filename)[0] + '.csv'
+if not args.input:
+    parser.error('Please specify the path to the input NDJSON file using --input')
 
-# Load the json data from the input file into memory
-with open(input_filename, 'r') as f:
-    data = json.load(f)
+if not os.path.isfile(args.input):
+    parser.error(f'{args.input} is not a valid file')
 
-# Open the output file for writing
-with open(output_filename, 'w', newline='') as f:
-    # Create a csv writer object
-    writer = csv.writer(f)
+output_filename = os.path.splitext(args.input)[0] + '.csv'
 
-    # Write the header row
-    writer.writerow(data[0].keys())
+# Open the input NDJSON file
+with open(args.input, 'r', encoding='utf-8') as f:
+    # Open the output CSV file
+    with open(output_filename, 'w', newline='', encoding='utf-8') as g:
+        writer = csv.writer(g)
+        # Parse the NDJSON data and write each row to the CSV file
+        for row in ndjson.load(f):
+            writer.writerow(row.values())
 
-    # Loop over each object in the data and write its values as a row in the csv file
-    for obj in data:
-        writer.writerow(obj.values())
-        
-print("Conversion completed successfully!")
+print(f'Successfully converted {args.input} to {output_filename}')
+
