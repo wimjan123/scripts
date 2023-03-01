@@ -9,21 +9,20 @@ input_filename = sys.argv[1]
 # Define the output filename by replacing the extension with .csv
 output_filename = os.path.splitext(input_filename)[0] + '.csv'
 
-# Open the input file for reading and the output file for writing
-with open(input_filename, 'r') as f_input, open(output_filename, 'w', newline='') as f_output:
+# Load the json data from the input file into memory
+with open(input_filename, 'r') as f:
+    data = json.load(f)
+
+# Open the output file for writing
+with open(output_filename, 'w', newline='') as f:
     # Create a csv writer object
-    writer = csv.writer(f_output)
+    writer = csv.writer(f)
 
-    # Loop over each line in the ndjson file
-    for line in f_input:
-        # Load the json object from the line
-        obj = json.loads(line)
+    # Write the header row
+    writer.writerow(data[0].keys())
 
-        # If this is the first object, write the header row
-        if f_input.tell() == len(line):
-            writer.writerow(obj.keys())
-
-        # Write the values of the object as a row in the csv file
+    # Loop over each object in the data and write its values as a row in the csv file
+    for obj in data:
         writer.writerow(obj.values())
         
 print("Conversion completed successfully!")
