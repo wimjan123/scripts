@@ -1,14 +1,26 @@
+import argparse
+import os
 import csv
 
-# Open the input CSV file
-with open('input.csv', 'r', newline='', encoding='utf-8') as f:
+parser = argparse.ArgumentParser(description='Filter out rows containing [deleted] in column B of a CSV file')
+parser.add_argument('--input', help='path to input CSV file')
+args = parser.parse_args()
+
+if not args.input:
+    parser.error('Please specify the path to the input CSV file using --input')
+
+if not os.path.isfile(args.input):
+    parser.error(f'{args.input} is not a valid file')
+
+output_filename = os.path.splitext(args.input)[0] + '_sifted.csv'
+
+with open(args.input, 'r', newline='', encoding='utf-8') as f, \
+     open(output_filename, 'w', newline='', encoding='utf-8') as g:
     reader = csv.reader(f)
-    # Open the output CSV file
-    with open('output.csv', 'w', newline='', encoding='utf-8') as g:
-        writer = csv.writer(g)
-        # Loop through each row and check if column B contains "[deleted]"
-        for row in reader:
-            if '[deleted]' not in row[1]:
-                # Write the row to the output CSV file if it doesn't contain "[deleted]"
-                writer.writerow(row)
+    writer = csv.writer(g)
+    for row in reader:
+        if '[deleted]' not in row[1]:
+            writer.writerow(row)
+
+print(f'Successfully sifted {args.input} and saved as {output_filename}')
 
