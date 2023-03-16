@@ -1,7 +1,7 @@
 import msgpack
 import msgpack_numpy as m
 from transformers import GPT2Config
-from .msgpack2pytorch import load_streaming_msgpack_file, load_flax_model_from_train_state
+from msgpack2pytorch import load_streaming_msgpack_file, load_flax_model_from_train_state
 
 m.patch()
 
