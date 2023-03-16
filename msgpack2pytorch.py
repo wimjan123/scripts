@@ -15,7 +15,8 @@ def load_streaming_msgpack_file(file_path):
     flattened_train_state = {}
 
     for key, value in unpacker:
-        value = from_bytes(jnp.ndarray, value)  # Pass jnp.ndarray as the first argument
+        value = from_bytes(jnp.ndarray, value)
+        key = tuple(key)  # Convert the list key to a tuple
         flattened_train_state[key] = value
 
     train_state = traverse_util.unflatten_dict(flattened_train_state)
