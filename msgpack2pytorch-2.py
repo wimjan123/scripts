@@ -9,8 +9,9 @@ def load_streaming_msgpack_file(file_path):
     with open(file_path, "rb") as f:
         unpacker = msgpack.Unpacker(f)
         for key, value in unpacker:
-            data[key] = value
+            data[tuple(key)] = value
     return data
+
 
 def load_flax_model_from_train_state(config_file, train_state):
     config = GPTJConfig.from_json_file(config_file)
