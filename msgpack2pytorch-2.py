@@ -13,4 +13,4 @@ def load_flax_model_from_train_state(config_file, train_state):
     return flax_model
 
 config_file = "/temp/config.json"
-flax_model = load_flax_model_from_train_state(config_file, train_state)
+flax_model = load_flax_model_from_train_state(config_file, msgpack_data)
