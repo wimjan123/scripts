@@ -4,13 +4,14 @@ from transformers import GPTJConfig, FlaxGPTJModel
 
 m.patch()
 
-def load_streaming_msgpack_file(file_path):
+def load_streaming_msgpack_file(file_path): 
     data = {}
     with open(file_path, "rb") as f:
-        unpacker = msgpack.Unpacker(f)
+        unpacker = msgpack.Unpacker(f, max_buffer_size=280 * 1024**3)  # Increase buffer size to 280 GB
         for key, value in unpacker:
             data[tuple(key)] = value
     return data
+
 
 
 def load_flax_model_from_train_state(config_file, train_state):
