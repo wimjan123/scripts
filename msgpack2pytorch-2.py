@@ -1,9 +1,22 @@
 import msgpack
 import msgpack_numpy as m
-from transformers import GPT2Config
-from msgpack2pytorch import load_streaming_msgpack_file, load_flax_model_from_train_state
+from transformers import GPTJConfig, FlaxGPTJModel 
 
 m.patch()
+
+def load_streaming_msgpack_file(file_path):
+    data = {}
+    with open(file_path, "rb") as f:
+        unpacker = msgpack.Unpacker(f)
+        for key, value in unpacker:
+            data[key] = value
+    return data
+
+def load_flax_model_from_train_state(config_file, train_state):
+    config = GPTJConfig.from_json_file(config_file)
+    flax_model = FlaxGPTJModel(config)
+    flax_model.params = train_state["params"]
+    return flax_model
 
 msgpack_file = "/temp/streaming_params"
 config_file = "/temp/config.json"
