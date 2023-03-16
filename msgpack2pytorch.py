@@ -1,11 +1,25 @@
-import torch
-from transformers import FlaxGPTJModel, GPTJModel
+import os
+import msgpack
+import jax.numpy as jnp
+from flax import traverse_util
+from flax.serialization import from_bytes, to_bytes
 
-# Load the Flax model
-flax_model = FlaxGPTJModel.from_pretrained("/temp/flax-weights.msgpack")
+def load_streaming_msgpack_file(file_path):
+    # Set max_buffer_size to a large value, e.g., 350 GB
+    max_buffer_size = 350 * 1024 * 1024 * 1024
+    unpacker = msgpack.Unpacker(raw=False, max_buffer_size=max_buffer_size)
 
-# Convert Flax model to PyTorch model
-pytorch_model = GPTJModel.from_pretrained("/temp/flax-weights.msgpack", from_flax=True)
+    with open(file_path, "rb") as f:
+        unpacker.feed(f.read())
 
-# Save the PyTorch model as a binary file
-pytorch_model.save_pretrained("/temp/pytorch-weights.bin")
+    flattened_train_state = {}
+
+    for key, value in unpacker:
+        value = from_bytes(jnp.ndarray, value)  # Pass jnp.ndarray as the first argument
+        flattened_train_state[key] = value
+
+    train_state = traverse_util.unflatten_dict(flattened_train_state)
+    return train_state
+
+msgpack_file = "/temp/streaming_params"
+train_state = load_streaming_msgpack_file(msgpack_file)
