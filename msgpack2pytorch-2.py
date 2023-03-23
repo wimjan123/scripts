@@ -1,7 +1,7 @@
 import os
 import msgpack
 import torch
-from transformers import GPTNeoForCausalLM, GPTNeoConfig
+from transformers import GPTJForCausalLM, GPTJConfig
 
 def load_streaming_msgpack_file(file_path):
     data = {}
@@ -23,8 +23,8 @@ def unflatten_dict(dictionary):
     return unflattened
 
 def load_flax_model_from_train_state(config_file, train_state):
-    config = GPTNeoConfig.from_json_file(config_file)
-    flax_model = GPTNeoForCausalLM(config)
+    config = GPTJConfig.from_json_file(config_file)
+    flax_model = GPTJForCausalLM(config)
     flax_model.params = unflatten_dict(train_state)
     return flax_model
 
@@ -35,5 +35,5 @@ config_file = "/temp/config.json"
 flax_model = load_flax_model_from_train_state(config_file, msgpack_data)
 
 # Convert the Flax model to a PyTorch model and save it
-pytorch_model = GPTNeoForCausalLM.from_pretrained(flax_model, from_flax=True)
+pytorch_model = GPTJForCausalLM.from_pretrained(flax_model, from_flax=True)
 pytorch_model.save_pretrained("converted_pytorch_model")
