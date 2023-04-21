@@ -28,9 +28,9 @@ with open(input_file, 'r') as f:
 for line in lines:
     if line.strip() != '':
         # Extract start and end timestamps and subtitle text from the line
-        start_time = line.split('->')[0].strip()
-        end_time = line.split('->')[1].strip()
-        subtitle_text = line.split(']')[1].strip()
+        start_time = line.split('->')[0].strip()[1:-1] # Remove brackets
+        end_time = line.split('->')[1].strip()[1:-1] # Remove brackets
+        subtitle_text = line.split(']')[1].strip()[1:-1] # Remove brackets
 
         # Create SRT formatted line
         srt_line = f"{counter}\n{start_time} --> {end_time}\n{subtitle_text}\n\n"
